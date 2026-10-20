@@ -1,0 +1,32 @@
+# Rime dictionary
+# encoding: utf-8
+# 微软双拼音形：按源层顺序保留候选，单字全码默认可用。
+# 派生数据更新：python3 others/script/generate_mspy_xh.py
+
+---
+name: mspy_xh
+version: "1"
+sort: original
+use_preset_vocabulary: false
+
+import_tables:
+  - mspy_xh_dicts/mspy_xh.user.top
+  - mspy_xh_dicts/mspy_xh.user
+  - mspy_xh_dicts/mspy_xh.primary
+  - mspy_xh_dicts/mspy_xh.secondary
+  - mspy_xh_dicts/mspy_xh.whimsicality
+  - mspy_xh_dicts/mspy_xh.off-table
+  - mspy_xh_dicts/mspy_xh.single.code
+  - xhup_dicts/xhup.fast.symbols
+  - mspy_xh_dicts/mspy_xh.full.code.words
+  - mspy_xh_dicts/mspy_xh.full.code.chars
+  # 日语用汉字补充；保留基础字词在同码候选中的优先顺序。
+  - mspy_xh_dicts/mspy_xh.japanese
+  # 复用原表生僻字形码，缺形码字另由基本区双拼候选补足。
+  - mspy_xh_dicts/mspy_xh.rare.chars
+
+  # 按需开启的扩展词库。
+  # - mspy_xh_dicts/mspy_xh.secondary.simple
+  # 固定符号键位可直接复用原表。
+  # - xhup_dicts/xhup.symbols
+...

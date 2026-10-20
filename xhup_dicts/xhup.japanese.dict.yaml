@@ -1,0 +1,29 @@
+# Rime dictionary
+# encoding: utf-8
+# 常见日语用汉字补充：本项目手工补录，不属于官方小鹤原表。
+# 读音：cn_dicts/41448.dict.yaml 中的中文拼音；不使用日语音读/训读。
+# 字形拆分参考 xhup.ok.dict.yaml、radical_pinyin.dict.yaml，按小鹤首末取形。
+# 下列编码使用小鹤双拼作为生成源，由 generate_mspy_xh.py 转换读音部分。
+# 栃 木/万；峠 山/下；辻 辶/十；榊 木/申；働 亻/力；笹 竹/世；塀 土/开。
+# 槻 木/见；樫 木/土；椛 木/匕；畠 白/田；駅 馬/捺；鴫 田/鳥；鱈 魚/彐。
+
+---
+name: xhup.japanese
+version: "2026-10-20"
+sort: original
+use_preset_vocabulary: false
+...
+栃	limw
+峠	qxex
+辻	uizu
+榊	ufmu
+働	dsrl
+笹	tivu
+塀	pktk
+槻	gvme
+樫	jmmt
+椛	hxmb
+畠	tmbt
+駅	yimn
+鴫	tmtn
+鱈	xtae
