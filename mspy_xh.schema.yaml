@@ -30,6 +30,9 @@ switches:
   - name: short_hints
     reset: 1
     states: [ 隐藏简码, 提示简码 ]
+  - name: emoji
+    reset: 1
+    states: [ 🙂, 😀 ]
 
 engine:
   processors:
@@ -63,6 +66,7 @@ engine:
     - simplifier@simplification
     - simplifier@short_hints
     - reverse_lookup_filter@mspy_xh_codes
+    - simplifier@emoji
     - uniquifier
 
 speller:
@@ -140,6 +144,12 @@ short_hints:
     - xform/^/〔/
     - xform/$/〕/
   tips: all
+
+# 复用雾凇 Emoji 词表，候选追加表情；F4 菜单可开关。
+emoji:
+  opencc_config: emoji.json
+  option_name: emoji
+  inherit_comment: false
 
 reverse_lookup:
   dictionary: mspy_xh_reverse

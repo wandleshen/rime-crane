@@ -135,6 +135,10 @@ http://www.keyboard-layout-editor.com/#/
 - 反引号是单码通配符，例如 `` q;f` `` 可以反查“青”，候选注释显示对应的微软音形编码。
 - `Tab` 清空编码，`Enter` 上屏原始编码，`Ctrl+j` 切换简繁，`Ctrl+.` 切换中英标点。
 
+### Emoji
+
+复用雾凇的 `opencc/emoji.json` 词表，候选栏会在对应词语后追加 Emoji，例如输入 `haha` 时，除「哈哈」外还会出现「哈哈 😄」。Emoji 默认开启，按 `F4` 可随时关闭。
+
 ### 词库与转换规则
 
 `mspy_xh.dict.yaml` 挂载 `mspy_xh_dicts/` 下的派生词库，保留源表分层及层内候选顺序，**默认启用单字全码和生僻字形码扩展**。额外二简次选可在入口中按需开启。原小鹤方案及 `xhup_dicts/` 数据保持独立。
