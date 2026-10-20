@@ -1,0 +1,61 @@
+# Rime schema
+# encoding: utf-8
+# 共用雾凇词库，以独立 prism 编译规范微软双拼，不影响其他拼音方案。
+# 键位参考 https://github.com/rime/rime-double-pinyin
+
+schema:
+  schema_id: mspy_xh_sentence
+  name: 微软音形整句词库
+  version: "1"
+
+engine:
+  processors:
+    - speller
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - abc_segmentor
+  translators:
+    - script_translator
+
+speller:
+  alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ;"
+  delimiter: " '"
+  algebra:
+    - erase/^xx$/
+    - xform/^([aoe].*)$/o$1/
+    - xform/iu$/Ⓠ/
+    - xform/[iu]a$/Ⓦ/
+    - xform/er$|[uv]an$/Ⓡ/
+    - xform/[uv]e$/Ⓣ/
+    - xform/v$|uai$/Ⓨ/
+    - xform/^sh/Ⓤ/
+    - xform/^ch/Ⓘ/
+    - xform/^zh/Ⓥ/
+    - xform/uo$/Ⓞ/
+    - xform/[uv]n$/Ⓟ/
+    - xform/i?ong$/Ⓢ/
+    - xform/[iu]ang$/Ⓓ/
+    - xform/(.)en$/$1Ⓕ/
+    - xform/(.)eng$/$1Ⓖ/
+    - xform/(.)ang$/$1Ⓗ/
+    - xform/ian$/Ⓜ/
+    - xform/(.)an$/$1Ⓙ/
+    - xform/iao$/Ⓒ/
+    - xform/(.)ao$/$1Ⓚ/
+    - xform/(.)ai$/$1Ⓛ/
+    - xform/(.)ei$/$1Ⓩ/
+    - xform/ie$/Ⓧ/
+    - xform/ui$/Ⓥ/
+    - xform/(.)ou$/$1Ⓑ/
+    - xform/in$/Ⓝ/
+    - xform/ing$/;/
+    - xlit/ⓆⓌⓇⓉⓎⓊⒾⓄⓅⓈⒹⒻⒼⒽⓂⒿⒸⓀⓁⓏⓍⓋⒷⓃ/qwrtyuiopsdfghmjcklzxvbn/
+
+translator:
+  dictionary: rime_ice
+  prism: mspy_xh_sentence
+  enable_user_dict: true
+  user_dict: mspy_xh_sentence
+  enable_sentence: true

@@ -1,0 +1,31 @@
+# Rime schema
+# encoding: utf-8
+# 英文词库共用 melt_eng，拼写派生使用独立的微软双拼 prism。
+
+schema:
+  schema_id: mspy_xh_english
+  name: 微软音形英文词库
+  version: "1"
+
+engine:
+  processors:
+    - speller
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - abc_segmentor
+  translators:
+    - table_translator
+
+speller:
+  alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ;"
+  algebra:
+    __include: melt_eng.schema.yaml:/algebra_double_pinyin_mspy
+
+translator:
+  dictionary: melt_eng
+  prism: mspy_xh_english
+  enable_sentence: false
+  enable_user_dict: false
+  enable_completion: true

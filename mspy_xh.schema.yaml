@@ -1,0 +1,176 @@
+# Rime schema
+# encoding: utf-8
+
+schema:
+  schema_id: mspy_xh
+  name: 微软双拼音形
+  version: "3"
+  description: |
+    微软双拼整句 + 小鹤双形，中英混输，双拼同音字候选补全。
+    空格或数字确认候选；零声母使用 o，ing 使用分号。
+    码表由 others/script/generate_mspy_xh.py 从小鹤源表派生。
+  dependencies:
+    - mspy_xh_reverse
+    - mspy_xh_english
+    - mspy_xh_pinyin
+    - mspy_xh_sentence
+
+switches:
+  - name: ascii_mode
+    reset: 0
+    states: [ 中, A ]
+  - name: full_shape
+    states: [ 半, 全 ]
+  - name: simplification
+    reset: 0
+    states: [ 简, 繁 ]
+  - name: ascii_punct
+    reset: 0
+    states: [ 中文标点, 英文标点 ]
+  - name: short_hints
+    reset: 1
+    states: [ 隐藏简码, 提示简码 ]
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - table_translator
+    - table_translator@pinyin
+    - table_translator@melt_eng
+    - table_translator@cn_en
+    - lua_translator@*unicode
+    - reverse_lookup_translator
+    - history_translator@history
+    # 低分整句翻译器置后，避免相邻翻译器合并时阻挡双拼字表和英文候选。
+    - script_translator@sentence
+  filters:
+    - lua_filter@*autocap_filter
+    - simplifier@simplification
+    - simplifier@short_hints
+    - reverse_lookup_filter@mspy_xh_codes
+    - uniquifier
+
+speller:
+  alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ;`"
+  initials: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ;`"
+  delimiter: " '"
+  max_code_length: 0
+  auto_select: false
+  auto_clear: none
+
+translator:
+  dictionary: mspy_xh
+  enable_charset_filter: false
+  enable_sentence: false
+  enable_completion: true
+  enable_user_dict: false
+  initial_quality: 1.2
+
+# 整句使用独立微软双拼 prism，降低初始分以保留音形、双拼单字和英文优先级。
+# 无完整字词候选的长输入仍由整句翻译器分词组句。
+sentence:
+  dictionary: rime_ice
+  prism: mspy_xh_sentence
+  user_dict: mspy_xh_sentence
+  enable_sentence: true
+  enable_completion: true
+  enable_user_dict: true
+  initial_quality: -4
+
+# 基本区同音字只在输入完整双拼两码后参与候选，不为缺形码字编造形码。
+pinyin:
+  dictionary: mspy_xh_pinyin
+  prism: mspy_xh_pinyin
+  enable_completion: false
+  enable_sentence: false
+  enable_user_dict: false
+  initial_quality: 1
+
+# 独立 prism 避免与小鹤双拼的英文符号派生混用。
+melt_eng:
+  dictionary: melt_eng
+  prism: mspy_xh_english
+  enable_completion: true
+  enable_sentence: false
+  enable_user_dict: false
+  initial_quality: 1.1
+  comment_format:
+    - xform/.*//
+
+cn_en:
+  dictionary: ""
+  user_dict: en_dicts/cn_en_mspy
+  db_class: stabledb
+  enable_completion: true
+  enable_sentence: false
+  initial_quality: 0.5
+  comment_format:
+    - xform/.*//
+
+history:
+  input: ;f
+  size: 1
+  initial_quality: 1
+
+simplification:
+  opencc_config: s2tw.json
+  option_name: simplification
+  tips: all
+
+short_hints:
+  opencc_config: mspy_xh_short_hints.json
+  option_name: short_hints
+  show_in_comment: true
+  comment_format:
+    - xform/^/〔/
+    - xform/$/〕/
+  tips: all
+
+reverse_lookup:
+  dictionary: mspy_xh_reverse
+  enable_completion: true
+  enable_user_dict: false
+  tips: 〔通配反查〕
+
+mspy_xh_codes:
+  tags: [ reverse_lookup ]
+  dictionary: mspy_xh
+  overwrite_comment: true
+
+punctuator:
+  import_preset: default
+
+key_binder:
+  import_preset: default
+  bindings:
+    - { accept: Tab, send: Escape, when: composing }
+    - { accept: Shift+space, toggle: full_shape, when: always }
+    - { accept: Control+period, toggle: ascii_punct, when: always }
+    - { accept: Control+j, toggle: simplification, when: always }
+
+recognizer:
+  import_preset: default
+  patterns:
+    reverse_lookup: '^[a-z;`]*`[a-z;`]*$'
+    # 大写英文和中英词继续走候选；U+十六进制编码由 Unicode 翻译器处理。
+    uppercase: ""
+    unicode: "^U[0-9a-fA-F]+"
+    punct: ""
+
+menu:
+  page_size: 9

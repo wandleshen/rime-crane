@@ -1,0 +1,28 @@
+# Rime schema
+# encoding: utf-8
+# 基本区字符的两码微软双拼候选；仅作为主方案依赖，不加入菜单。
+
+schema:
+  schema_id: mspy_xh_pinyin
+  name: 微软音形基本区字表
+  version: "1"
+
+engine:
+  processors:
+    - speller
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - abc_segmentor
+  translators:
+    - table_translator
+
+speller:
+  alphabet: "abcdefghijklmnopqrstuvwxyz;"
+
+translator:
+  dictionary: mspy_xh_pinyin
+  enable_sentence: false
+  enable_completion: false
+  enable_user_dict: false
