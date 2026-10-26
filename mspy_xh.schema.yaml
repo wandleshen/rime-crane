@@ -6,12 +6,11 @@ schema:
   name: 微软双拼音形
   version: "3"
   description: |
-    微软双拼整句 + 小鹤双形，中英混输，双拼同音字候选补全。
+    微软双拼整句 + 小鹤双形，双拼同音字候选补全。
     空格或数字确认候选；零声母使用 o，ing 使用分号。
     码表由 others/script/generate_mspy_xh.py 从小鹤源表派生。
   dependencies:
     - mspy_xh_reverse
-    - mspy_xh_english
     - mspy_xh_pinyin
     - mspy_xh_sentence
 
@@ -54,12 +53,11 @@ engine:
     - punct_translator
     - table_translator
     - table_translator@pinyin
-    - table_translator@melt_eng
     - table_translator@cn_en
     - lua_translator@*unicode
     - reverse_lookup_translator
     - history_translator@history
-    # 低分整句翻译器置后，避免相邻翻译器合并时阻挡双拼字表和英文候选。
+    # 低分整句翻译器置后，避免相邻翻译器合并时阻挡双拼字表候选。
     - script_translator@sentence
   filters:
     - lua_filter@*autocap_filter
@@ -85,7 +83,7 @@ translator:
   enable_user_dict: false
   initial_quality: 1.2
 
-# 整句使用独立微软双拼 prism，降低初始分以保留音形、双拼单字和英文优先级。
+# 整句使用独立微软双拼 prism，降低初始分以保留音形和双拼单字的优先级。
 # 无完整字词候选的长输入仍由整句翻译器分词组句。
 sentence:
   dictionary: rime_ice
@@ -104,17 +102,6 @@ pinyin:
   enable_sentence: false
   enable_user_dict: false
   initial_quality: 1
-
-# 独立 prism 避免与小鹤双拼的英文符号派生混用。
-melt_eng:
-  dictionary: melt_eng
-  prism: mspy_xh_english
-  enable_completion: true
-  enable_sentence: false
-  enable_user_dict: false
-  initial_quality: 1.1
-  comment_format:
-    - xform/.*//
 
 cn_en:
   dictionary: ""
