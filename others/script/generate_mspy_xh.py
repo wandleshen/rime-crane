@@ -210,6 +210,14 @@ class Converter:
         return "".join(convert_initial(c) for c in code)
 
 
+def drop_short_phrase(text, code):
+    """Three-or-more Han characters must use the full four-key code.
+
+    Short abbreviations stay available for one- and two-character entries.
+    """
+    return sum(1 for char in text if is_han(char)) >= 3 and len(code) < 4
+
+
 def header(name):
     return (
         "# Rime dictionary\n# encoding: utf-8\n"
@@ -248,6 +256,9 @@ def generated_files(root):
                 new_code = converter.convert(text, code, layer)
             except ValueError as exc:
                 raise ValueError("{}: {!r} {}: {}".format(source.name, text, code, exc)) from exc
+            if drop_short_phrase(text, new_code):
+                converter.stats["dropped_short_phrase"] += 1
+                continue
             result.append([text, new_code] + fields[2:])
             if len(text) == 1 and is_han(text) and len(code) == 4:
                 if not any(code[:2] in apply_algebra(p, rules) for p in readings[text]):

@@ -5,7 +5,7 @@ import unittest
 
 from generate_mspy_xh import (
     Converter, apply_algebra, build_basic_pinyin_rows, build_phonetic_map,
-    microsoft_code,
+    drop_short_phrase, microsoft_code,
 )
 
 
@@ -50,7 +50,6 @@ class MicrosoftXiaoheTests(unittest.TestCase):
 
     def test_short_codes_and_whimsical_shape_suffix(self):
         self.assertEqual(self.converter.convert("安静", "aj", "primary"), "oj")
-        self.assertEqual(self.converter.convert("爱好者", "ahv", "primary"), "ohv")
         self.assertEqual(self.converter.convert("安装", "a", "single.code"), "a")
         self.assertEqual(self.converter.convert("单元", "dye", "whimsicality"), "dye")
         self.assertEqual(self.converter.convert("音形", "yxk", "whimsicality"), "yxk")
@@ -65,6 +64,18 @@ class MicrosoftXiaoheTests(unittest.TestCase):
     def test_unknown_phonetic_code_is_not_silently_preserved(self):
         with self.assertRaisesRegex(ValueError, "unknown two-key source syllable"):
             self.converter.convert("甲", "qaab", "primary")
+
+    def test_long_words_lose_short_abbreviations(self):
+        self.assertTrue(drop_short_phrase("爱好者", "ohv"))
+        self.assertTrue(drop_short_phrase("不得不", "bdb"))
+        self.assertTrue(drop_short_phrase("呼之欲出", "hvy"))
+        self.assertFalse(drop_short_phrase("阿尔巴尼亚", "ooby"))
+        self.assertFalse(drop_short_phrase("安静", "oj"))
+        self.assertFalse(drop_short_phrase("你好", "nihk"))
+        self.assertFalse(drop_short_phrase("输入法", "urfa"))
+        self.assertFalse(drop_short_phrase("小鹤音形", "xhyx"))
+        # Literal shortcuts keep their fixed keys.
+        self.assertFalse(drop_short_phrase("https://flypy.cc", "xhg"))
 
     def test_all_reading_aliases_keep_one_canonical_target(self):
         # Both source zero-initial spellings must yield the same MS syllable.
