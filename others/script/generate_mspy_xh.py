@@ -35,7 +35,7 @@ FINALS = {
 # Official mnemonic/nonstandard spellings are fixed codes, not regular pinyin.
 FIXED_ENTRIES = {
     ("鹤", "eh"), ("偶尔", "eo"), ("什么", "sm"),
-    ("桃李争妍", "tlzy"), ("为什么", "wsme"),
+    ("为什么", "wsme"),
 }
 # Official syllabic m/n/ng/hm encodings have no standard two-key MS equivalent.
 SPECIAL_SYLLABLES = {"om": "om", "on": "on", "og": "og", "hm": "hm"}
@@ -173,6 +173,10 @@ class Converter:
         return self.mapping[code]
 
     def convert(self, text, code, layer):
+        """Convert an allowed shape entry, or return None for excluded phrases."""
+        if drop_phrase_code(text, code):
+            self.stats["dropped_phrase_code"] += 1
+            return None
         if (text, code) in FIXED_ENTRIES:
             self.fixed[(text, code)] += 1
             self.stats["fixed_mnemonic"] += 1
@@ -197,10 +201,8 @@ class Converter:
         if len(code) == 4:
             if count == 2:
                 result = self.syllable(code[:2]) + self.syllable(code[2:])
-            elif count == 3:
-                result = "".join(convert_initial(c) for c in code[:2]) + self.syllable(code[2:])
             else:
-                result = "".join(convert_initial(c) for c in code)
+                result = "".join(convert_initial(c) for c in code[:2]) + self.syllable(code[2:])
             self.stats["full_phrase"] += 1
             return result
         if len(code) == 3 and count == 2:
@@ -210,12 +212,10 @@ class Converter:
         return "".join(convert_initial(c) for c in code)
 
 
-def drop_short_phrase(text, code):
-    """Three-or-more Han characters must use the full four-key code.
-
-    Short abbreviations stay available for one- and two-character entries.
-    """
-    return sum(1 for char in text if is_han(char)) >= 3 and len(code) < 4
+def drop_phrase_code(text, code):
+    """Keep up to three Han characters; three-character entries need four keys."""
+    count = sum(1 for char in text if is_han(char))
+    return count >= 4 or (count == 3 and len(code) < 4)
 
 
 def header(name):
@@ -256,8 +256,7 @@ def generated_files(root):
                 new_code = converter.convert(text, code, layer)
             except ValueError as exc:
                 raise ValueError("{}: {!r} {}: {}".format(source.name, text, code, exc)) from exc
-            if drop_short_phrase(text, new_code):
-                converter.stats["dropped_short_phrase"] += 1
+            if new_code is None:
                 continue
             result.append([text, new_code] + fields[2:])
             if len(text) == 1 and is_han(text) and len(code) == 4:

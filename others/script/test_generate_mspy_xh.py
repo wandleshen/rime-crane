@@ -5,7 +5,7 @@ import unittest
 
 from generate_mspy_xh import (
     Converter, apply_algebra, build_basic_pinyin_rows, build_phonetic_map,
-    drop_short_phrase, microsoft_code,
+    microsoft_code,
 )
 
 
@@ -42,8 +42,7 @@ class MicrosoftXiaoheTests(unittest.TestCase):
     def test_phrase_length_rules_and_punctuation(self):
         cases = [("你好", "nihc", "nihk"), ("按时", "anui", "ojui"),
                  ("二进制", "ejvi", "ojvi"),
-                 ("阿尔巴尼亚", "aeby", "ooby"),
-                 ("阿尔，巴尼亚", "aeby", "ooby")]
+                 ("二进，制", "ejvi", "ojvi")]
         for text, source, target in cases:
             with self.subTest(text=text):
                 self.assertEqual(self.converter.convert(text, source, "primary"), target)
@@ -65,17 +64,21 @@ class MicrosoftXiaoheTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unknown two-key source syllable"):
             self.converter.convert("甲", "qaab", "primary")
 
-    def test_long_words_lose_short_abbreviations(self):
-        self.assertTrue(drop_short_phrase("爱好者", "ohv"))
-        self.assertTrue(drop_short_phrase("不得不", "bdb"))
-        self.assertTrue(drop_short_phrase("呼之欲出", "hvy"))
-        self.assertFalse(drop_short_phrase("阿尔巴尼亚", "ooby"))
-        self.assertFalse(drop_short_phrase("安静", "oj"))
-        self.assertFalse(drop_short_phrase("你好", "nihk"))
-        self.assertFalse(drop_short_phrase("输入法", "urfa"))
-        self.assertFalse(drop_short_phrase("小鹤音形", "xhyx"))
-        # Literal shortcuts keep their fixed keys.
-        self.assertFalse(drop_short_phrase("https://flypy.cc", "xhg"))
+    def test_phrase_code_length_boundaries(self):
+        cases = [
+            ("爱好者", "ahv", None),
+            ("不得不", "bdb", None),
+            ("小鹤音形", "xhyx", None),
+            ("阿尔巴尼亚", "aeby", None),
+            ("阿尔，巴尼亚", "aeby", None),
+            ("桃李争妍", "tlzy", None),
+            ("安静", "aj", "oj"),
+            ("你好", "nihc", "nihk"),
+            ("输入法", "urfa", "urfa"),
+        ]
+        for text, code, expected in cases:
+            with self.subTest(text=text):
+                self.assertEqual(self.converter.convert(text, code, "primary"), expected)
 
     def test_all_reading_aliases_keep_one_canonical_target(self):
         # Both source zero-initial spellings must yield the same MS syllable.
