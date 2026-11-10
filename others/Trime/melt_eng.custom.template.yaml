@@ -1,0 +1,4 @@
+patch:
+  schema/name: English
+  key_binder/bindings/+:
+    - {when: always, accept: Control+Shift+F12, select: mspy_xh}

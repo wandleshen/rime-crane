@@ -244,6 +244,21 @@ python3 -m unittest discover -s others/script -p test_generate_mspy_xh.py -v
 
 方案菜单只需加入 `mspy_xh`，其他 `mspy_xh_*` 是自动编译的隐藏依赖。目标设备使用自己的默认配置及 OpenCC 数据，不复制本机的 `build/` 或 `installation.yaml`；普通使用不需要 Python 或 Go。移动端键盘需提供可以发送分号的按键，以输入 `ing`。
 
+### Trime 中日英键盘
+
+`others/Trime/` 提供 Trime 3.3.12 **标准主题（`tongwenfeng`）**的可选补丁模板。先安装本仓库中文配置及 [Kagiroi 的预编译 build 分支](https://github.com/rimeinn/rime-kagiroi/tree/build)，保留 Kagiroi 包内的 `build/`、`lua/`、`opencc/` 目录结构。手机直接编译 `kagiroi_matrix` 大表可能耗尽内存；这里的 Kagiroi `build/` 是上游分发资源，不是其他设备的个人构建目录。
+
+将模板文件名中的 `.template` 去掉，放入 Trime 实际使用的用户目录；已有同名文件时合并 `patch`，保留个人设置。需要全部五份补丁，并保留本仓库的 `melt_eng` 方案及 `en_dicts/`。选择标准主题并部署后：
+
+| 操作或显示 | 中文 | 日文 | 英文 |
+| --- | --- | --- | --- |
+| 输入方案 | 微软双拼音形 | Kagiroi 罗马音 | Easy English Nano |
+| 空格标签 | 中文 | 日本語 | English |
+| 长按空格 | 切到日文 | 切到英文 | 切到中文 |
+| 有编码时按 Shift | 输入 `;`（`ing`） | 输入 `-`（长音 `ー`） | 沿用英文布局 |
+
+日文例如 `ko-hi-` 可转换为「コーヒー」。没有正在输入的编码时，Shift 保留原有大小写功能。长按切换使用每个方案各自的明确目标，不受 Rime 最近使用顺序影响。模板的键位索引对应标准主题的 26 键布局，其他主题或版本需按实际键位调整。
+
 ## 安装与部署
 
 建议初次安装前备份原先配置，并清空输入法用户配置目录。

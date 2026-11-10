@@ -1,0 +1,5 @@
+patch:
+  schema_list:
+    - {schema: mspy_xh}
+    - {schema: kagiroi}
+    - {schema: melt_eng}

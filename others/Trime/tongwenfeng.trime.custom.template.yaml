@@ -1,0 +1,24 @@
+# Trime 3.3.12 标准主题：三语切换与输入中的 Shift 编码键。
+patch:
+  "preset_keys/delimiter":
+    label: ';'
+    text: ';'
+  # 空标签使用 Trime 原生的当前方案名称显示。
+  "preset_keys/space/label": ""
+  "preset_keys/Language_cycle":
+    label: " "
+    send: Control+Shift+F12
+    functional: false
+  "preset_keyboards/default/keys/@33/long_click": Language_cycle
+  "preset_keyboards/letter/keys/@33/long_click": Language_cycle
+  "preset_keys/Japanese_long_vowel":
+    label: "-"
+    send: minus
+    functional: false
+  # Kagiroi 自动选择同名布局；复用默认键盘并保留三语切换。
+  "preset_keyboards/kagiroi":
+    __include: tongwenfeng.trime:/preset_keyboards/default
+    __patch:
+      name: 日本語
+      keys/@21/composing: Japanese_long_vowel
+      keys/@33/long_click: Language_cycle
